@@ -1,8 +1,33 @@
 use std::collections::HashMap;
 use rand::Rng;
+use rgym::
 // Initialize action-value function (Q) as dict
 
+mod line_world_env{
+    pub fn run(num_case: &mut i32){
+        // If there is no pre-determined num_case than put in random number between 5 and 10
+        if !num_case{
+            let mut rand_num = rand::thread_rng();
+            let mut random_number: i32;
+
+            loop {
+                random_number = rand_num.gen_range(5..11);
+                if random_number % 2 != 0{
+                    break;
+                }
+            }
+            
+            
+        };
+
+        // the character always spawns in the middle
+
+    };   
+};
+
 fn main() {
+
+    let env = 
 
     // variable ajustable
     let  epsilon = 0.1; // epsilon greedy-policy
@@ -28,7 +53,11 @@ fn main() {
         };
     
     fn epsilon_greedy_policy(state, epsilon) {
-            if 
+            let mut rand_num = rand::thread_rng();
+
+            if  let random_number: i32 = rand_num.gen_range(0..1) < epsilon{
+                    return env.action_space.sample()
+            };
         };
 
     // Example usage
