@@ -2,12 +2,12 @@ use rand::seq::SliceRandom;
 use rand::Rng;
 use std::collections::{HashMap, HashSet};
 
-struct ModelFreeLineWorld {
+struct LineWorldEnv {
     nb_cells: usize,
     agent_pos: usize,
 }
 
-impl ModelFreeLineWorld {
+impl LineWorldEnv {
     // Constructor to initialize the environment with a given number of cells
     fn new(nb_cells: usize) -> Self {
         Self {
@@ -84,7 +84,7 @@ impl ModelFreeLineWorld {
 
 // Monte Carlo Agent struct
 struct MonteCarloAgent {
-    env: ModelFreeLineWorld,
+    env: LineWorldEnv,
     episodes: usize,
     gamma: f64,
     epsilon: f64,
@@ -94,7 +94,7 @@ struct MonteCarloAgent {
 
 impl MonteCarloAgent {
     // Constructor for the Monte Carlo Agent
-    fn new(env: ModelFreeLineWorld, episodes: usize, gamma: f64, epsilon: f64) -> Self {
+    fn new(env: LineWorldEnv, episodes: usize, gamma: f64, epsilon: f64) -> Self {
         let mut q_value: HashMap<(usize, usize), f64> = HashMap::new();
         let mut returns = HashMap::new();
         for state in 0..env.nb_cells {
@@ -181,8 +181,9 @@ impl MonteCarloAgent {
 }
 
 fn main() {
+    // changes number of cells here : 
     let nb_cells = 10;
-    let env = ModelFreeLineWorld::new(nb_cells);
+    let env = LineWorldEnv::new(nb_cells);
     let mut agent = MonteCarloAgent::new(env, 1000, 0.9, 0.1);
     agent.train();
 
