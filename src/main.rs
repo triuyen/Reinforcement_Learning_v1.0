@@ -82,31 +82,24 @@ impl ModelFreeLineWorld {
     }
 }
 
-// Function to choose a random policy (randomly select an action)
-fn random_policy() -> usize {
-    let actions = vec![0, 1];
-    let mut rng = rand::thread_rng();
-    *actions.choose(&mut rng).unwrap() // Return a random action
-}
-
 // Monte Carlo Agent struct
 struct MonteCarloAgent {
     env: ModelFreeLineWorld,
     episodes: usize,
     gamma: f64,
     epsilon: f64,
-    Q: HashMap<(usize, usize), f64>,
+    q_value: HashMap<(usize, usize), f64>,
     returns: HashMap<(usize, usize), Vec<f64>>,
 }
 
 impl MonteCarloAgent {
     // Constructor for the Monte Carlo Agent
     fn new(env: ModelFreeLineWorld, episodes: usize, gamma: f64, epsilon: f64) -> Self {
-        let mut Q = HashMap::new();
+        let mut q_value: HashMap<(usize, usize), f64> = HashMap::new();
         let mut returns = HashMap::new();
         for state in 0..env.nb_cells {
             for action in env.available_actions() {
-                Q.insert((state, action), 0.0);
+                q_value.insert((state, action), 0.0);
                 returns.insert((state, action), Vec::new());
             }
         }
@@ -116,7 +109,7 @@ impl MonteCarloAgent {
             episodes,
             gamma,
             epsilon,
-            Q,
+            q_value,
             returns,
         }
     }
@@ -133,8 +126,8 @@ impl MonteCarloAgent {
                 .available_actions()
                 .iter()
                 .max_by(|&&a, &&b| {
-                    self.Q[&(state, a)]
-                        .partial_cmp(&self.Q[&(state, b)])
+                    self.q_value[&(state, a)]
+                        .partial_cmp(&self.q_value[&(state, b)])
                         .unwrap()
                 })
                 .unwrap()
@@ -157,22 +150,22 @@ impl MonteCarloAgent {
         episode
     }
 
-    // Update Q-values based on the episode
-    fn update_Q_values(&mut self, episode: Vec<(usize, usize, f64)>) {
-        let mut G = 0.0; // Total return
+    // Update q-values based on the episode
+    fn update_q_values(&mut self, episode: Vec<(usize, usize, f64)>) {
+        let mut goal = 0.0; // Total return
         let mut visited_state_action_pairs = HashSet::new();
 
         for (state, action, reward) in episode.iter().rev() {
-            G = self.gamma * G + reward; // Discounted return
+            goal = self.gamma * goal + reward; // Discounted return
             if !visited_state_action_pairs.contains(&(*state, *action)) {
-                self.returns.get_mut(&(*state, *action)).unwrap().push(G);
+                self.returns.get_mut(&(*state, *action)).unwrap().push(goal);
                 // Update Q-value as the average of returns
                 let avg = self.returns[&(*state, *action)]
                     .iter()
                     .copied()
                     .sum::<f64>()
                     / self.returns[&(*state, *action)].len() as f64;
-                self.Q.insert((*state, *action), avg);
+                self.q_value.insert((*state, *action), avg);
                 visited_state_action_pairs.insert((*state, *action));
             }
         }
@@ -182,7 +175,7 @@ impl MonteCarloAgent {
     fn train(&mut self) {
         for _ in 0..self.episodes {
             let episode = self.generate_episode();
-            self.update_Q_values(episode);
+            self.update_q_values(episode);
         }
     }
 }
@@ -201,7 +194,7 @@ fn main() {
                 "Q(cell: {}, step: {}) = {}",
                 state,
                 if action == 0 { "left" } else { "right" },
-                agent.Q[&(state, action)]
+                agent.q_value[&(state, action)]
             );
         }
     }
