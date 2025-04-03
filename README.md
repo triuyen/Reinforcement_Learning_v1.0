@@ -9,7 +9,7 @@ Things in main.rs file :
     - Implemented methods for agent movement, scoring, and state management.
     - Developed MonteCarloAgent struct with epsilon-greedy policy and Q-value updates.
     - Included example usage to demonstrate functionality. 
-
+### Dyna-Q : 
 ## Enviorements for test :
 ### LineWorld:
                     _ _ _ _X_ _ _
