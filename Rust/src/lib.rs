@@ -1,4 +1,5 @@
-use rand::seq::SliceRandom;
+use rand::seq::{IndexedMutRandom, SliceRandom};
+use rand::prelude::IndexedRandom;
 use rand::Rng;
 use std::collections::{HashMap, HashSet};
 
@@ -118,7 +119,7 @@ impl MonteCarloAgent {
     fn epsilon_greedy_policy(&self, state: usize) -> usize {
         let mut rng = rand::thread_rng();
         if rng.gen::<f64>() < self.epsilon {
-            *self.env.available_actions().choose(&mut rng).unwrap() // Random action
+            *self.env.available_actions().choose_mut(&mut rng).unwrap() // Random action
         } else {
             // Action with max Q-value
             *self
